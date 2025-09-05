@@ -1,4 +1,6 @@
 const Attendance = require('../models/attendance');
+const { Op } = require("sequelize");
+
 const addAttendance = async (req, res) => {
   try {
     const data = req.body; 
@@ -22,17 +24,33 @@ const addAttendance = async (req, res) => {
 
 
 const getAttendance = async (req, res) => {
-    try {
-        const { date } = req.params;
-        const attendance = await Attendance.findAll({ where: { date } });
-        res.status(200).json(attendance);
-    } catch (error) {
-        console.error("Error fetching attendance:", error);
-        res.status(500).json({ error: "Internal server error" });
-    }
-}
+  try {
+    const { date } = req.params;
+
+    // Find all attendance for given date
+    const attendance = await Attendance.findAll({
+      where: { date } // exact match works for DATEONLY
+    });
+
+    res.status(200).json(attendance);
+  } catch (error) {
+    console.error("Error fetching attendance:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+const getAllAttendance = async (req, res) => {
+  try {
+    const attendance = await Attendance.findAll();
+    res.status(200).json(attendance);
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
 
 module.exports = {
     addAttendance,
-    getAttendance
+    getAttendance,
+    getAllAttendance
 };
